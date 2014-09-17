@@ -52,3 +52,7 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+#files generated from project
+*.jpg
+*.csv
+*.xlsx
