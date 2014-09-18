@@ -13,7 +13,7 @@ class CellAdvisor:
         self.name = name
         self.socket= \
             socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(1)    
+        self.socket.settimeout(3)    
         self.socket.connect((ip,66))
         
     def close(self):
@@ -32,7 +32,9 @@ class CellAdvisor:
             self.socket.send(bytearray([0x7F, 'C', cmd, 0x1, 0x1] + list(data) + [0x70 , 0x7E]))
             
         while not over:
-            data = self.socket.recv(4000)
+            data = ''
+            while len(data)==0:
+                data = self.socket.recv(4000)
                 
             carry += data
                 
@@ -65,8 +67,13 @@ class CellAdvisor:
     
     def get_interference_power(self):
         ret = self.send_cmd(0x83)
-        power =  float(ET.fromstring(ret).find('TraceData').get('P251'))
-        return {'power': power, 'name':self.name}
+        trace_data = ET.fromstring(ret).find('TraceData')
+        power_list = [float(trace_data.get('P'+str(x))) for x in range(200,300)]
+        max_power = max(power_list)
+        #power =  float(ET.fromstring(ret).find('TraceData').get('P251'))
+        if max_power not in power_list:
+            max_power *= -1.0 
+        return {'power': max_power, 'name':self.name}
 
     def get_sample(self):
         ret = self.send_cmd(0x01)
