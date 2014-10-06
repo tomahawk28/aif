@@ -3,50 +3,64 @@ Created on Aug 25, 2014
 
 @author: bok61488
 '''
-#import Image
+
+import sys
+from time import sleep
 
 from jdprotocol.CellAdvisor import CellAdvisor
-from ctypes import *
+from jdprotocol.ecompass import ecompass
 
-""" filename: 50 char
-    date: 30 char
-    size: unsigned int
+
+ecompass = ecompass(port=3)
+
+#omni = CellAdvisor(ip="192.168.0.102",name="omni")
+yagi = CellAdvisor(ip="192.168.0.102",name="yagi")
+
 """
-class FileList(Structure):
-    _fields_ = [('filename', c_char*50),
-                ('date', c_char*20),
-                ('size', c_uint)]
+Testing log
+"""
+f = open("yagi_roof_highangle.csv", "w")
+f.write("compass,yagi_1,yagi_2,yagi_3,yagi_4,yagi_5,yagi_6\n")
+
+"""
+Initialize members
+"""
+compass = 0.0
+yagi_power_table = [0.0]*6
 
 
-s = CellAdvisor(ip="10.82.26.64",name="omni")
+"""
+Process 
+"""
+while compass < 360.0:
+    
+    print "\nCurrent compass: {}".format(compass)
+    print "Keep going?:"
+    sys.stdin.readline()
+    
+    #omni_power = omni.get_interference_power()["power"]
+    for i in range(6):
+        ecompass.switch_antenna(i)
+        sleep(0.3)
+        yagi_power_table[i]= yagi.get_interference_power()["power"]
+    
+    
+    #print ecompass._get_compass()
+    #print omni_power
+    print yagi_power_table
+    csv_format = ",".join(["{}"]*7) + "\n"
+    f.write( csv_format.format(compass,*yagi_power_table))
+    
+    #-- Add 5.0 degree to compass for rotation
+    compass += 5.0
+    
+    
+    
+print "All Done!"
+f.close()
 
-ret = s.send_cmd(0x02, "1")
-
-#print type(ret) , ret
-
-#print ret
-print list(ret[79:84])
-
-f = FileList(filename=ret[:50],date=ret[50:71],size=ret[70:74])
-
-#print f.filename, f.date, f.size
-#print ret[50]
-
-#print ret.count("\xff\xdb")
-
-#db_index = [i for i, v in enumerate(ret) if v=="\xdb"]
-
-#for index in db_index:
-#    if ret[index-5] == "\xff":
-#        print "got it", ret[index-6:index+25]
-#        ret.count("\xff\x00\xfcE1f")
-#print len(ret)
-
-#ret = re.sub("\xff.+\xdb","\xff\xdb",ret)
 
 
-
-#print len(ret)
 
 
 

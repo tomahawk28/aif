@@ -75,6 +75,21 @@ class CellAdvisor:
             max_power *= -1.0 
         return {'power': max_power, 'name':self.name}
 
+    def get_store_list(self):
+        ret = self.send_cmd(0x88)
+        print ret
+        return ret
+
+    def get_check_eqp(self):
+        ret = self.send_cmd(0x50)
+        print ret
+        return ret
+    
+    def get_Trace_Data(self):
+        ret = self.send_cmd(0x84)
+#        print ret
+        return ret
+    
     def get_sample(self):
         ret = self.send_cmd(0x01)
         return {'power': ret, 'name':self.name}
