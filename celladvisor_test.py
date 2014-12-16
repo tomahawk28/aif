@@ -14,7 +14,7 @@ class Test(unittest.TestCase):
 
     
     def setUp(self):
-        self.s = CellAdvisor(ip="10.82.26.237",name="omni")
+        self.s = CellAdvisor(ip="10.82.26.12",name="omni")
 
 
     def tearDown(self):
@@ -23,19 +23,19 @@ class Test(unittest.TestCase):
 
     def test_get_interference_power(self):
         ret = self.s.get_interference_power()
-        
         self.assertTrue("name" in ret)
         self.assertEqual(ret["name"], "omni", "the given name to advisor should be same exist in a result packet")
         self.assertTrue("power" in ret)
         self.assertTrue(type(ret["power"])  is float)
     
     def test_send_cmd(self):
-        f=open("screen2.jpg","w")
-        ret = self.s.send_cmd(0x60)
-        f.write(ret)
-        f.close()
+        with open("screen2.jpg", "wb") as f:
+            ret = self.s.send_cmd(0x60)
+            f.write(ret)
+            
+        
         self.assertIs(list(ret), "")
-        #log.debug(ret)
+        
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
